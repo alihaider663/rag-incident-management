@@ -1,0 +1,486 @@
+[
+  {
+    "test_id": "TC-1.1",
+    "name": "Ingest Text Runbook Document",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 1110,
+    "details": {
+      "status": "success",
+      "chunks_stored": 1,
+      "message": "Multimodal ingest: 1 chunks stored."
+    }
+  },
+  {
+    "test_id": "TC-1.3",
+    "name": "Malformed/Empty Upload Handling",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 127,
+    "details": {
+      "text": ""
+    }
+  },
+  {
+    "test_id": "TC-2.1",
+    "name": "Valid Incident Full Intake Chain (WF2 -> WF3 -> WF4)",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 1000,
+    "details": {
+      "status": "success",
+      "ticket_id": "E2E-MAIN-449548",
+      "message": "Incident received and routed for AI classification",
+      "classification_result": {
+        "classification": {
+          "ticket_id": "E2E-MAIN-449548",
+          "category": "HUMAN_REVIEW_REQUIRED",
+          "subcategory": "",
+          "priority": "P1",
+          "business_impact": "",
+          "team_category": "",
+          "confidence": 60,
+          "reasoning": "The retrieved documents do not provide specific information about CRM or authentication gateway issues. The incident involves CRM login failure and an authentication service timeout, but no relevant knowledge was found to classify it accurately."
+        },
+        "routing": {
+          "ticket_id": "E2E-MAIN-449548",
+          "assigned_team": "Unassigned - L1 Triage",
+          "team_email": "l1.triage@company.com",
+          "routing_status": "FALLBACK",
+          "priority": "P1",
+          "category": "HUMAN_REVIEW_REQUIRED"
+        }
+      }
+    }
+  },
+  {
+    "test_id": "TC-2.2",
+    "name": "Missing Required Fields (Expect 400 Rejection)",
+    "success": true,
+    "status_code": 400,
+    "duration_ms": 89,
+    "details": {
+      "status": "error",
+      "message": "Missing required fields: ticket_id, title, description, and service are mandatory."
+    }
+  },
+  {
+    "test_id": "TC-2.3",
+    "name": "Duplicate Ticket ID Upsert Safe",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 732,
+    "details": {
+      "text": ""
+    }
+  },
+  {
+    "test_id": "TC-3.1",
+    "name": "Direct AI Classification (Valid FK Ticket)",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 8155,
+    "details": {
+      "classification": {
+        "ticket_id": "WF3-DIRECT-459455",
+        "category": "Database",
+        "subcategory": "Connection Pool",
+        "priority": "P1",
+        "business_impact": "Production outage due to exhausted connection pool affecting API servers.",
+        "team_category": "Database",
+        "confidence": 95,
+        "reasoning": "The incident involves a PostgreSQL database connection pool exhaustion in a production environment, which is critical as it affects API servers. This aligns with a P1 priority due to potential production outage and impact on multiple customers."
+      },
+      "routing": {
+        "ticket_id": "WF3-DIRECT-459455",
+        "assigned_team": "DBA Team",
+        "team_email": "dba.team@company.com",
+        "routing_status": "SUCCESS",
+        "priority": "P1",
+        "category": "Database"
+      }
+    }
+  },
+  {
+    "test_id": "TC-3.2",
+    "name": "Vague Description Human Review / Fallback",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 5669,
+    "details": {
+      "classification": {
+        "ticket_id": "WF3-VAGUE-475020",
+        "category": "HUMAN_REVIEW_REQUIRED",
+        "subcategory": "",
+        "priority": "P4",
+        "business_impact": "",
+        "team_category": "",
+        "confidence": 50,
+        "reasoning": "The incident description and retrieved documents do not provide sufficient information to classify the incident accurately."
+      },
+      "routing": {
+        "ticket_id": "WF3-VAGUE-475020",
+        "assigned_team": "Unassigned - L1 Triage",
+        "team_email": "l1.triage@company.com",
+        "routing_status": "FALLBACK",
+        "priority": "P4",
+        "category": "HUMAN_REVIEW_REQUIRED"
+      }
+    }
+  },
+  {
+    "test_id": "TC-4.1",
+    "name": "Known Category Team Routing",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 1201,
+    "details": {
+      "ticket_id": "E2E-MAIN-449548",
+      "assigned_team": "DBA Team",
+      "team_email": "dba.team@company.com",
+      "routing_status": "SUCCESS",
+      "priority": "P2",
+      "category": "Database"
+    }
+  },
+  {
+    "test_id": "TC-4.2",
+    "name": "Unknown Category Fallback Routing",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 1319,
+    "details": {
+      "ticket_id": "E2E-MAIN-449548",
+      "assigned_team": "Unassigned - L1 Triage",
+      "team_email": "l1.triage@company.com",
+      "routing_status": "FALLBACK",
+      "priority": "P3",
+      "category": "NonExistentSpecialistGroup"
+    }
+  },
+  {
+    "test_id": "TC-5.1",
+    "name": "RCA Analysis with Knowledge Base Retrieval",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 4513,
+    "details": {
+      "ticket_id": "E2E-MAIN-449548",
+      "observations": [
+        "500 users unable to login to CRM Portal",
+        "Authentication service failure reported"
+      ],
+      "evidence": [
+        "No relevant historical incidents or SOPs retrieved",
+        "No runbooks or previous resolutions related to authentication service failure found"
+      ],
+      "root_causes": [],
+      "overall_confidence": 0,
+      "review_status": "HUMAN_INVESTIGATION_REQUIRED"
+    }
+  },
+  {
+    "test_id": "TC-6.1",
+    "name": "Resolution Recommendation Generation",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 9058,
+    "details": {
+      "ticket_id": "E2E-MAIN-449548",
+      "immediate_actions": [
+        "Check if the authentication service is running using the command: systemctl status auth-service",
+        "Attempt to restart the authentication service using: systemctl restart auth-service"
+      ],
+      "resolution_steps": [
+        "Verify the service configuration file for any recent changes that might have caused the service to stop.",
+        "Check the service logs located at /var/log/auth-service.log for any error messages or stack traces.",
+        "Ensure that port 8080 is not blocked by the firewall using: sudo ufw status",
+        "If the service fails to start, escalate to the development team with the error logs."
+      ],
+      "validation_steps": [
+        "Confirm the authentication service is active using: systemctl is-active auth-service",
+        "Test the authentication endpoint by sending a request to http://localhost:8080/auth and checking for a valid response."
+      ],
+      "preventive_actions": [
+        "Set up a monitoring alert for the authentication service to notify the team if it stops unexpectedly.",
+        "Schedule regular audits of service configuration files to ensure no unauthorized changes are made."
+      ]
+    }
+  },
+  {
+    "test_id": "TC-7.1",
+    "name": "New Incident Notification Send",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 20236,
+    "details": {
+      "ticket_id": "E2E-MAIN-449548",
+      "notification_type": "new_incident",
+      "email_sent": true,
+      "teams_attempted": false
+    }
+  },
+  {
+    "test_id": "TC-7.2",
+    "name": "Escalation Notification Send",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 2700,
+    "details": {
+      "ticket_id": "E2E-MAIN-449548",
+      "notification_type": "escalation",
+      "email_sent": true,
+      "teams_attempted": false
+    }
+  },
+  {
+    "test_id": "TC-7.3",
+    "name": "Unknown Team Fallback Notification",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 2226,
+    "details": {
+      "ticket_id": "E2E-MAIN-449548",
+      "notification_type": "new_incident",
+      "email_sent": true,
+      "teams_attempted": false
+    }
+  },
+  {
+    "test_id": "TC-8.1",
+    "name": "SLA Engine Polling & Tracking Active (2-min Interval)",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 0,
+    "details": {
+      "status": "ACTIVE",
+      "interval": "2m"
+    }
+  },
+  {
+    "test_id": "TC-9.1",
+    "name": "LOW Risk Assessment (Auto-Approved)",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 1216,
+    "details": {
+      "ticket_id": "WF9-LOW-528330",
+      "risk_level": "LOW",
+      "approval_required": false,
+      "approver": "System (auto)",
+      "approval_status": "AUTO_APPROVED"
+    }
+  },
+  {
+    "test_id": "TC-9.2",
+    "name": "HIGH Risk Assessment (Requires Approval / PENDING)",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 3396,
+    "details": {
+      "ticket_id": "WF9-HIGH-537562",
+      "risk_level": "HIGH",
+      "approval_required": true,
+      "approver": "Executive / Infrastructure Manager",
+      "approval_status": "PENDING"
+    }
+  },
+  {
+    "test_id": "TC-9.4",
+    "name": "Approval Decision (APPROVED)",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 3015,
+    "details": {
+      "ticket_id": "WF9-HIGH-537562",
+      "decision": "APPROVED",
+      "approver": "Test Incident Commander"
+    }
+  },
+  {
+    "test_id": "TC-10.1",
+    "name": "Safe Action Matched Self-Healing Execution (Simulated/Safe-by-default)",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 7359,
+    "details": {
+      "ticket_id": "WF10-SAFE-553613",
+      "action": "",
+      "execution_method": "none",
+      "command": "",
+      "execution_status": "SKIPPED",
+      "validation_status": "NOT_RUN",
+      "execution_time": 0,
+      "block_reason": null
+    }
+  },
+  {
+    "test_id": "TC-10.3",
+    "name": "HIGH Risk Hard Safety Backstop (SKIPPED)",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 5435,
+    "details": {
+      "ticket_id": "WF10-HIGH-569619",
+      "action": "",
+      "execution_method": "none",
+      "command": "",
+      "execution_status": "SKIPPED",
+      "validation_status": "NOT_RUN",
+      "execution_time": 0,
+      "block_reason": "HIGH risk actions require manual execution by an approved human operator - never auto-executed."
+    }
+  },
+  {
+    "test_id": "TC-11.1",
+    "name": "Generate & Store Knowledge Article from Incident",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 11399,
+    "details": {
+      "id": 78,
+      "ticket_id": "E2E-MAIN-449548",
+      "workflow_name": "WF11 - Feedback Learning",
+      "action": "knowledge_article_ingest",
+      "status": "stored",
+      "execution_time": null,
+      "created_at": "2026-08-24T15:16:32.904196+00:00"
+    }
+  },
+  {
+    "test_id": "TC-11.2",
+    "name": "Feedback Learning Duplicate Check Handling",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 12504,
+    "details": {
+      "id": 79,
+      "ticket_id": "E2E-MAIN-449548",
+      "workflow_name": "WF11 - Feedback Learning",
+      "action": "knowledge_article_ingest",
+      "status": "stored",
+      "execution_time": null,
+      "created_at": "2026-08-24T15:16:45.39423+00:00"
+    }
+  },
+  {
+    "test_id": "TC-12.1 (mttr)",
+    "name": "Analytics Metric Query: mttr",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 571,
+    "details": {
+      "metric": "mttr",
+      "rows": 0
+    }
+  },
+  {
+    "test_id": "TC-12.1 (sla_compliance)",
+    "name": "Analytics Metric Query: sla_compliance",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 650,
+    "details": {
+      "metric": "sla_compliance",
+      "rows": 4
+    }
+  },
+  {
+    "test_id": "TC-12.1 (incident_volume)",
+    "name": "Analytics Metric Query: incident_volume",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 601,
+    "details": {
+      "metric": "incident_volume",
+      "rows": 3
+    }
+  },
+  {
+    "test_id": "TC-12.1 (category_trends)",
+    "name": "Analytics Metric Query: category_trends",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 1313,
+    "details": {
+      "metric": "category_trends",
+      "rows": 5
+    }
+  },
+  {
+    "test_id": "TC-12.1 (team_workload)",
+    "name": "Analytics Metric Query: team_workload",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 798,
+    "details": {
+      "metric": "team_workload",
+      "rows": 4
+    }
+  },
+  {
+    "test_id": "TC-12.1 (escalation_rate)",
+    "name": "Analytics Metric Query: escalation_rate",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 673,
+    "details": {
+      "metric": "escalation_rate",
+      "rows": 4
+    }
+  },
+  {
+    "test_id": "TC-12.1 (approval_rate)",
+    "name": "Analytics Metric Query: approval_rate",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 625,
+    "details": {
+      "metric": "approval_rate",
+      "rows": 3
+    }
+  },
+  {
+    "test_id": "TC-12.1 (self_healing_success)",
+    "name": "Analytics Metric Query: self_healing_success",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 898,
+    "details": {
+      "metric": "self_healing_success",
+      "rows": 1
+    }
+  },
+  {
+    "test_id": "TC-12.1 (rca_confidence_trend)",
+    "name": "Analytics Metric Query: rca_confidence_trend",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 946,
+    "details": {
+      "metric": "rca_confidence_trend",
+      "rows": 1
+    }
+  },
+  {
+    "test_id": "TC-12.1 (top_recurring)",
+    "name": "Analytics Metric Query: top_recurring",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 765,
+    "details": {
+      "metric": "top_recurring",
+      "rows": 8
+    }
+  },
+  {
+    "test_id": "TC-12.2",
+    "name": "Invalid Metric Handling",
+    "success": true,
+    "status_code": 200,
+    "duration_ms": 85,
+    "details": {
+      "text": ""
+    }
+  }
+]
